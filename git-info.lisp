@@ -20,14 +20,16 @@
    (flags u2)
    (name tstring)))
 
-(defun read-repository (directory)
-  (with-open-file (in (merge-pathnames #P".git/index" (car (directory directory)))
+(defun tracked-files (directory)
+  (with-open-file (in (merge-paths (force-directory directory) #P".git/index")
                       :element-type '(unsigned-byte 8))
     (let ((index (read-value 'index in)))
       (if (string= "DIRC" (file-type index))
           (loop repeat (entries index)
              for byte = (read-value 'entry in) do
                (read-until-not 0 in :read #'read-byte)
-
              collect byte)
           (error "Invalid Git repository")))))
+
+(defun tags (directory)
+  (list-directory (merge-paths directory ".git/refs/tags")))

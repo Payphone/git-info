@@ -6,6 +6,7 @@
   :license "MIT"
   :serial t
   :depends-on (#:binary-utils
-               #:peyton-utils)
+               #:peyton-utils
+               #:files-and-folders)
   :components ((:file "package")
                (:file "git-info")))

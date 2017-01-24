@@ -3,7 +3,8 @@
 (defpackage #:git-info
   (:use #:cl
         #:binary-utils
-        #:peyton-utils)
+        #:peyton-utils
+        #:files-and-folders)
   (:export #:index
            #:entry
            #:metadata-modified
@@ -17,4 +18,5 @@
            #:sha-1
            #:flags
            #:name
-           #:read-repository))
+           #:tracked-files
+           #:tags))
