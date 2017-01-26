@@ -31,5 +31,17 @@
              collect byte)
           (error "Invalid Git repository")))))
 
+(defun branches (directory)
+  (mapcar #'pathname-name (list-directory (merge-paths directory
+                                                       ".git/refs/heads/"))))
+
+(defun remotes (directory)
+  (mapcar #'pathname-name (list-directory (merge-paths directory
+                                                       ".git/refs/remotes"))))
 (defun tags (directory)
-  (list-directory (merge-paths directory ".git/refs/tags")))
+  (mapcar #'pathname-name (list-directory (merge-paths directory
+                                                       ".git/refs/tags/"))))
+
+(defun current-branch (directory)
+  (with-open-file (in (merge-paths directory ".git/HEAD"))
+    (car (last (split-sequence:split-sequence #\/ (read-line in nil))))))

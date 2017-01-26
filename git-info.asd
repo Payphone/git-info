@@ -7,6 +7,7 @@
   :serial t
   :depends-on (#:binary-utils
                #:peyton-utils
-               #:files-and-folders)
+               #:files-and-folders
+               #:split-sequence)
   :components ((:file "package")
                (:file "git-info")))
