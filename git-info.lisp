@@ -16,9 +16,19 @@
    (uid u4)
    (gid u4)
    (file-size u4)
-   (sha-1 u20)
+   (sha1 u20)
    (flags u2)
    (name tstring)))
+
+(defstruct gitlog
+  (file-sha1)
+  (commit-sha1)
+  (author)
+  (email)
+  (date)
+  (timezone)
+  (type)
+  (commit))
 
 (defun tracked-files (directory)
   (with-open-file (in (merge-paths (force-directory directory) #P".git/index")
@@ -35,13 +45,28 @@
   (mapcar #'pathname-name (list-directory (merge-paths directory
                                                        ".git/refs/heads/"))))
 
-(defun remotes (directory)
-  (mapcar #'pathname-name (list-directory (merge-paths directory
-                                                       ".git/refs/remotes"))))
 (defun tags (directory)
   (mapcar #'pathname-name (list-directory (merge-paths directory
                                                        ".git/refs/tags/"))))
 
 (defun current-branch (directory)
   (with-open-file (in (merge-paths directory ".git/HEAD"))
-    (car (last (split-sequence:split-sequence #\/ (read-line in nil))))))
+    (with-open-stream (str (make-string-input-stream (reverse (read-line in))))
+      (reverse (read-until #\/ str :type 'string)))))
+
+(defun read-log (stream)
+  (when (peek-char nil stream nil)
+    (make-gitlog :file-sha1 (read-until #\Space stream :type 'string)
+                 :commit-sha1 (read-until #\Space stream :type 'string)
+                 :author (read-until #\Space stream :type 'string)
+                 :email (read-until #\Space stream :type 'string)
+                 :date (parse-integer (read-until #\Space stream :type 'string))
+                 :timezone (read-until #\Tab stream :type 'string)
+                 :type (read-until #\: stream :type 'string)
+                 :commit (subseq (read-until #\Newline stream :type 'string) 1))))
+
+(defun logs (directory)
+  (with-open-file (in (merge-paths directory ".git/logs/HEAD"))
+    (loop for log = (read-log in)
+       until (null log)
+       collect log)))

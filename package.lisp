@@ -18,9 +18,18 @@
            #:uid
            #:gid
            #:file-size
-           #:sha-1
+           #:sha1
            #:flags
+           #:logs
+           #:gitlog
+           #:gitlog-file-sha1
+           #:gitlog-commit-sha1
+           #:gitlog-author
+           #:gitlog-email
+           #:gitlog-date
+           #:gitlog-timezone
+           #:gitlog-type
+           #:gitlog-commit
            #:name
-           #:remotes
            #:tags
            #:tracked-files))
