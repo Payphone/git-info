@@ -29,7 +29,7 @@
            #:gitlog-date
            #:gitlog-timezone
            #:gitlog-type
-           #:gitlog-commit
+           #:gitlog-message
            #:name
            #:tags
            #:tracked-files))

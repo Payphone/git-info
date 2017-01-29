@@ -28,7 +28,7 @@
   (date)
   (timezone)
   (type)
-  (commit))
+  (message))
 
 (defun tracked-files (directory)
   (with-open-file (in (merge-paths (force-directory directory) #P".git/index")
@@ -63,7 +63,7 @@
                  :date (parse-integer (read-until #\Space stream :type 'string))
                  :timezone (read-until #\Tab stream :type 'string)
                  :type (read-until #\: stream :type 'string)
-                 :commit (subseq (read-until #\Newline stream :type 'string) 1))))
+                 :message (subseq (read-until #\Newline stream :type 'string) 1))))
 
 (defun logs (directory)
   (with-open-file (in (merge-paths directory ".git/logs/HEAD"))
