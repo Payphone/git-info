@@ -8,6 +8,6 @@
   :depends-on (#:binary-utils
                #:peyton-utils
                #:files-and-folders
-               #:split-sequence)
+               #:dates-and-times)
   :components ((:file "package")
                (:file "git-info")))

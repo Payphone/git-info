@@ -60,7 +60,8 @@
                  :commit-sha1 (read-until #\Space stream :type 'string)
                  :author (read-until #\Space stream :type 'string)
                  :email (read-until #\Space stream :type 'string)
-                 :date (parse-integer (read-until #\Space stream :type 'string))
+                 :date (universal->epoch
+                        (parse-integer (read-until #\Space stream :type 'string)))
                  :timezone (read-until #\Tab stream :type 'string)
                  :type (read-until #\: stream :type 'string)
                  :message (subseq (read-until #\Newline stream :type 'string) 1))))

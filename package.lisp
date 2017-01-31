@@ -5,7 +5,7 @@
         #:binary-utils
         #:peyton-utils
         #:files-and-folders
-        #:split-sequence)
+        #:dates-and-times)
   (:export #:branches
            #:current-branch
            #:index
