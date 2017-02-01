@@ -21,13 +21,13 @@
    (name tstring)))
 
 (defclass gitlog ()
-  ((file-sha1 :initarg :file-sha1 :accesor file-sha1)
+  ((file-sha1 :initarg :file-sha1 :accessor file-sha1)
    (commit-sha1 :initarg :commit-sha1 :accessor commit-sha1)
    (author :initarg :author :accessor author)
    (email :initarg :email :accessor email)
    (date :initarg :date :accessor date)
    (timezone :initarg :timezone :accessor timezone)
-   (type :initarg :type :accessor type)
+   (log-type :initarg :log-type :accessor log-type)
    (message :initarg :message :accessor message)))
 
 (defun tracked-files (directory)

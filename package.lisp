@@ -28,7 +28,7 @@
            #:email
            #:date
            #:timezone
-           #:type
+           #:log-type
            #:message
            #:name
            #:tags
