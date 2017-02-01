@@ -20,15 +20,15 @@
    (flags u2)
    (name tstring)))
 
-(defstruct gitlog
-  (file-sha1)
-  (commit-sha1)
-  (author)
-  (email)
-  (date)
-  (timezone)
-  (type)
-  (message))
+(defclass gitlog ()
+  ((file-sha1 :initarg :file-sha1 :accesor file-sha1)
+   (commit-sha1 :initarg :commit-sha1 :accessor commit-sha1)
+   (author :initarg :author :accessor author)
+   (email :initarg :email :accessor email)
+   (date :initarg :date :accessor date)
+   (timezone :initarg :timezone :accessor timezone)
+   (type :initarg :type :accessor type)
+   (message :initarg :message :accessor message)))
 
 (defun tracked-files (directory)
   (with-open-file (in (merge-paths (force-directory directory) #P".git/index")
@@ -56,15 +56,16 @@
 
 (defun read-log (stream)
   (when (peek-char nil stream nil)
-    (make-gitlog :file-sha1 (read-until #\Space stream :type 'string)
-                 :commit-sha1 (read-until #\Space stream :type 'string)
-                 :author (read-until #\Space stream :type 'string)
-                 :email (read-until #\Space stream :type 'string)
-                 :date (universal->epoch
-                        (parse-integer (read-until #\Space stream :type 'string)))
-                 :timezone (read-until #\Tab stream :type 'string)
-                 :type (read-until #\: stream :type 'string)
-                 :message (subseq (read-until #\Newline stream :type 'string) 1))))
+    (make-instance 'gitlog
+                   :file-sha1 (read-until #\Space stream :type 'string)
+                   :commit-sha1 (read-until #\Space stream :type 'string)
+                   :author (read-until #\Space stream :type 'string)
+                   :email (read-until #\Space stream :type 'string)
+                   :date (epoch->universal
+                          (parse-integer (read-until #\Space stream :type 'string)))
+                   :timezone (read-until #\Tab stream :type 'string)
+                   :type (read-until #\: stream :type 'string)
+                   :message (subseq (read-until #\Newline stream :type 'string) 1))))
 
 (defun logs (directory)
   (with-open-file (in (merge-paths directory ".git/logs/HEAD"))

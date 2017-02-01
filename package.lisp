@@ -22,14 +22,14 @@
            #:flags
            #:logs
            #:gitlog
-           #:gitlog-file-sha1
-           #:gitlog-commit-sha1
-           #:gitlog-author
-           #:gitlog-email
-           #:gitlog-date
-           #:gitlog-timezone
-           #:gitlog-type
-           #:gitlog-message
+           #:file-sha1
+           #:commit-sha1
+           #:author
+           #:email
+           #:date
+           #:timezone
+           #:type
+           #:message
            #:name
            #:tags
            #:tracked-files))
