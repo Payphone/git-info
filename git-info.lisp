@@ -2,6 +2,16 @@
 
 (in-package #:git-info)
 
+(defun octets->string->integer (octets)
+  (parse-integer (octets->string octets) :junk-allowed t))
+
+(defdata space-tstring :terminator (char-code #\Space) :function #'octets->string)
+(defdata tab-tstring :terminator (char-code #\Tab) :function #'octets->string)
+(defdata colon-tstring :terminator (char-code #\:) :function #'octets->string)
+(defdata space-tinteger :terminator (char-code #\Space)
+         :function #'octets->string->integer)
+(defdata newline-tstring :terminator (char-code #\Newline) :function #'octets->string)
+
 (defbinary index ()
   ((file-type s4)
    (version u4)
@@ -20,15 +30,15 @@
    (flags u2)
    (name tstring)))
 
-(defclass gitlog ()
-  ((file-sha1 :initarg :file-sha1 :accessor file-sha1)
-   (commit-sha1 :initarg :commit-sha1 :accessor commit-sha1)
-   (author :initarg :author :accessor author)
-   (email :initarg :email :accessor email)
-   (date :initarg :date :accessor date)
-   (timezone :initarg :timezone :accessor timezone)
-   (log-type :initarg :log-type :accessor log-type)
-   (message :initarg :message :accessor message)))
+(defbinary gitlog ()
+  ((file-sha1 space-tstring)
+   (commit-sha1 space-tstring)
+   (author space-tstring)
+   (email space-tstring)
+   (date space-tinteger)
+   (timezone tab-tstring)
+   (log-type colon-tstring)
+   (message newline-tstring)))
 
 (defun tracked-files (directory)
   (with-open-file (in (merge-paths (force-directory directory) #P".git/index")
@@ -36,8 +46,7 @@
     (let ((index (read-value 'index in)))
       (if (string= "DIRC" (file-type index))
           (loop repeat (entries index)
-             for byte = (read-value 'entry in) do
-               (read-until-not 0 in :read #'read-byte)
+             for byte = (read-value 'entry in)
              collect byte)
           (error "Invalid Git repository")))))
 
@@ -54,21 +63,9 @@
     (with-open-stream (str (make-string-input-stream (reverse (read-line in))))
       (reverse (read-until #\/ str :type 'string)))))
 
-(defun read-log (stream)
-  (when (peek-char nil stream nil)
-    (make-instance 'gitlog
-                   :file-sha1 (read-until #\Space stream :type 'string)
-                   :commit-sha1 (read-until #\Space stream :type 'string)
-                   :author (read-until #\Space stream :type 'string)
-                   :email (read-until #\Space stream :type 'string)
-                   :date (epoch->universal
-                          (parse-integer (read-until #\Space stream :type 'string)))
-                   :timezone (read-until #\Tab stream :type 'string)
-                   :type (read-until #\: stream :type 'string)
-                   :message (subseq (read-until #\Newline stream :type 'string) 1))))
-
 (defun logs (directory)
-  (with-open-file (in (merge-paths directory ".git/logs/HEAD"))
-    (loop for log = (read-log in)
+  (with-open-file (in (merge-paths directory ".git/logs/HEAD")
+                      :element-type '(unsigned-byte 8))
+    (loop for log = (read-value 'gitlog in)
        until (null log)
        collect log)))
